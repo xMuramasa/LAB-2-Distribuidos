@@ -63,7 +63,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	storeInLibrary(tempBook)
 
 	// write/save buffer to disk
-	ioutil.WriteFile(fileName, []byte(in.GetChunk()), os.ModeAppend)
+	ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
 
 	//fmt.Println("Split to : ", fileName)
 

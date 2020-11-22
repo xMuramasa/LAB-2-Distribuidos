@@ -72,7 +72,7 @@ func createChunksForFile(fileName string, c pb.GreeterClient) {
 			ChunkPart:  int32(i),
 			FileName:   fileName,
 			ClientName: clientName,
-			Chunk:      string(partBuffer),
+			Chunk:      partBuffer,
 			Part:       int32(totalPartsNum),
 		}
 

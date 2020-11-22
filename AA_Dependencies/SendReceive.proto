@@ -29,7 +29,7 @@ message StoreRequest {
     int32 chunkPart = 1;
     string fileName = 2;
     string clientName = 3;
-    string chunk = 4;
+    bytes chunk = 4;
     int32 part = 5;
 }
 
