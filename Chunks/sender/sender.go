@@ -55,7 +55,7 @@ func createChunksForFile(fileName string, c pb.GreeterClient) {
 		file.Read(partBuffer)
 
 		// write to disk
-		fileName := "./out/" + fileName + "_part_" + strconv.FormatUint(i, 10)
+		fileName := fileName + "_part_" + strconv.FormatUint(i, 10)
 		_, err := os.Create(fileName)
 
 		if err != nil {
