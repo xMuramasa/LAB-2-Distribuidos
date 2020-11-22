@@ -69,7 +69,7 @@ func createChunksForFile(fileName string, c pb.GreeterClient) {
 
 		// generacion de orden
 		storeRequest := &pb.StoreRequest{
-			ChunkPart:  strconv.FormatUint(i, 10),
+			ChunkPart:  int32(i),
 			FileName:   fileName,
 			ClientName: clientName,
 			Chunk:      string(partBuffer),
