@@ -1,5 +1,5 @@
 // Package main implements a server for Greeter service.
-package chunks
+package main
 
 import (
 	"bufio"

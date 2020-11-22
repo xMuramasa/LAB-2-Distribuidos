@@ -1,5 +1,5 @@
 // Package chunks implements a client for Greeter service.
-package chunks
+package main
 
 import (
 	"context"
