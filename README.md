@@ -10,7 +10,7 @@ ______________
 
 
 ## Maquinas 
-Máquina 1   Logistica --------> Tiene grpc & rabbit
+Máquina 1   receiver --------> Tiene grpc & rabbit
 hostname:   dist29
 contraseña: BcSz2fUS
 
@@ -18,7 +18,7 @@ Máquina 2   camiones  --------> Tiene grpc
 hostname:   dist31
 contraseña: jzCsSjfR
 
-Máquina 3   clientes  --------> Tiene grpc
+Máquina 3   sender  --------> Tiene grpc
 hostname:   dist30
 contraseña: CtXTq9qq
 
@@ -47,6 +47,7 @@ ______________
 
 
 ## Consideraciones:
+    - Se asume que hay un directorio en GOPATH llamado lab2
     - Se asume que el usuario sabe lo que tiene que hacer y no comete errores en sus inputs
     - Se asume que existe una carpeta llamada helloworld dentro de $GOROOT/src
     - Se asume que las variables de entorno estan correctamente actualizadas ($GOROOT, $GOPATH, $GOBIN) en el archivo, .bashrc ubicado en ~/ con lo siguiente
