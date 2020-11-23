@@ -61,11 +61,13 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	}
 
 	storeInLibrary(tempBook)
-
 	// write/save buffer to disk
 	ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
-
 	//fmt.Println("Split to : ", fileName)
+
+	if library[in.GetFileName()].parts == library[in.GetFileName()].stored {
+		joinFile(in.GetFileName(), library[in.GetFileName()].parts)
+	}
 
 	return &pb.StoreReply{Message: "Received chunk & stored in disk"}, nil
 }
@@ -180,7 +182,6 @@ func ListenToSender() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve s1: %v", err)
 	}
-	joinFile("Don_Quijote_de_la_Mancha-Cervantes_Miguel.pdf", library["Don_Quijote_de_la_Mancha-Cervantes_Miguel.pdf"].parts)
 }
 
 func main() {
