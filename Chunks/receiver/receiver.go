@@ -58,15 +58,13 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	tempBook := books{
 		name:   in.GetFileName(),
 		parts:  in.GetPart(),
-		stored: 0,
+		stored: 1,
 	}
 
 	storeInLibrary(tempBook)
 	// write/save buffer to disk
 	ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
 	//fmt.Println("Split to : ", fileName)
-
-	fmt.Printf("books %d / %d of %s\n", int(library[in.GetFileName()].stored), int(library[in.GetFileName()].parts), in.GetFileName())
 
 	if int(library[in.GetFileName()].parts) == int(library[in.GetFileName()].stored) {
 		fmt.Println("ready to join book")
