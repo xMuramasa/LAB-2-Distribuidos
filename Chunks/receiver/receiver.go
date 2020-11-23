@@ -27,9 +27,7 @@ var library map[string]*books
 func storeInLibrary(book books) {
 	if library[book.name] != nil {
 		library[book.name].stored++
-		fmt.Printf("book++ %s %d\n", library[book.name].name, int(library[book.name].stored))
 	} else {
-		fmt.Printf("stored new book %s\n", book.name)
 		library[book.name] = &book
 	}
 }
@@ -67,6 +65,8 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	// write/save buffer to disk
 	ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
 	//fmt.Println("Split to : ", fileName)
+
+	fmt.Printf("books %d / %d of %s\n", int(library[in.GetFileName()].stored), int(library[in.GetFileName()].parts), in.GetFileName())
 
 	if int(library[in.GetFileName()].parts) == int(library[in.GetFileName()].stored) {
 		fmt.Println("ready to join book")
@@ -177,7 +177,7 @@ func joinFile(fileName string, totalParts int32) {
 //ListenToSender listener
 func ListenToSender() {
 	//--------------------------------------------------------------> Server1
-	fmt.Print("Waitin for my Clientes...")
+	fmt.Println("Waitin for my Clientes...")
 	lis, err := net.Listen("tcp", portSender)
 	if err != nil {
 		log.Fatalf("failed to listen1: %v", err)
