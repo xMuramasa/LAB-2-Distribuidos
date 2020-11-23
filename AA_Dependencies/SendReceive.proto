@@ -26,7 +26,7 @@ service Greeter {
 
 // The request message containing the chunk's name and clientName.
 message StoreRequest {
-    int32 chunkPart = 1;
+    string chunkPart = 1;
     string fileName = 2;
     string clientName = 3;
     bytes chunk = 4;

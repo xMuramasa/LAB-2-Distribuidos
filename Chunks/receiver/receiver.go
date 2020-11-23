@@ -46,7 +46,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	log.Printf("Received: chunk 250kb. From: %v", in.GetClientName())
 
 	// write to disk
-	fileName := "./out/" + in.GetFileName() + "_part_" + strconv.FormatUint(in.GetChunkPart(), 10)
+	fileName := "./out/" + in.GetFileName() + "_part_" + in.GetChunkPart()
 	_, err := os.Create(fileName)
 
 	if err != nil {

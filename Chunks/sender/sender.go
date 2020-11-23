@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"strconv"
 	"time"
 
 	pb "lab2"
@@ -68,7 +69,7 @@ func createChunksForFile(fileName string, c pb.GreeterClient) {
 
 		// generacion de orden
 		storeRequest := &pb.StoreRequest{
-			ChunkPart:  int32(i),
+			ChunkPart:  strconv.FormatUint(i, 10),
 			FileName:   fileName,
 			ClientName: clientName,
 			Chunk:      partBuffer,
