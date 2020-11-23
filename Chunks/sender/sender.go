@@ -87,66 +87,6 @@ func createChunksForFile(fileName string, c pb.GreeterClient) {
 	}
 }
 
-/*
-	hacerOrden()
-	hace pedidos automaticamente para un cliente desde una lista esperando un intervalo de tiempo
-	Input: lista p, conexion c, tiempo de espera waitingTime
-	returns: nada
-
-func hacerOrden(p *list.List, c pb.GreeterClient, waitingTime int) {
-
-	for {
-		if p.Front() == nil {
-			fmt.Println("No hay mas ordenes que enviar.")
-			break
-
-		} else {
-			// waiting time
-			time.Sleep(time.Duration(waitingTime) * time.Second)
-
-			front := p.Front()
-			itemI := Items(front.Value.(Items))
-
-			tipo := "none"
-
-			if itemI.prioridad == "0" {
-				tipo = "Normal"
-			} else if itemI.prioridad == "1" {
-				tipo = "prioritario"
-			} else {
-				tipo = "retail"
-			}
-
-			// generacion de orden
-			orden := &pb.OrderRequest{
-				OrderID:      itemI.id,
-				ProductName:  itemI.name,
-				ProductValue: itemI.data[0],
-				Src:          itemI.data[1],
-				Dest:         itemI.data[2],
-				Priority:     itemI.prioridad,
-				ProductType:  tipo,
-			}
-
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-			defer cancel()
-			// Hacer una consulta
-			r, err := c.MakeOrder(ctx, orden)
-			if err != nil {
-				log.Fatalf("could not greet: %v", err)
-			}
-
-			// mostrar codigo seguimiento por pantalla
-			fmt.Print("\n<--------------- INFORMATION --------------->\n")
-			log.Printf("Order Tracking Code: %s\n", r.GetMessage())
-			fmt.Println("\n<--------------- INFORMATION --------------->")
-
-			p.Remove(front)
-
-		}
-	}
-}
-*/
 func main() {
 
 	// Set up a connection to the server.
