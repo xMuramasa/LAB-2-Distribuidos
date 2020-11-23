@@ -26,8 +26,10 @@ var library map[string]*books
 
 func storeInLibrary(book books) {
 	if library[book.name] != nil {
+		fmt.Printf("book++ %s\n", book.name)
 		library[book.name].stored++
 	} else {
+		fmt.Printf("stored new book %s\n", book.name)
 		library[book.name] = &book
 	}
 }
@@ -67,6 +69,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	//fmt.Println("Split to : ", fileName)
 
 	if library[in.GetFileName()].parts == library[in.GetFileName()].stored {
+		fmt.Println("ready to join book")
 		joinFile(in.GetFileName(), library[in.GetFileName()].parts)
 	}
 
@@ -106,7 +109,7 @@ func joinFile(fileName string, totalParts int32) {
 	for j := uint64(0); j < totalPartsNum; j++ {
 
 		//read a chunk
-		currentChunkFileName := "./chunking/out/" + fileName + "_part_" + strconv.FormatUint(j, 10)
+		currentChunkFileName := "./out/" + fileName + "_part_" + strconv.FormatUint(j, 10)
 
 		newFileChunk, err := os.Open(currentChunkFileName)
 
@@ -171,6 +174,7 @@ func joinFile(fileName string, totalParts int32) {
 	file.Close()
 }
 
+//ListenToSender listener
 func ListenToSender() {
 	//--------------------------------------------------------------> Server1
 	fmt.Print("Waitin for my Clientes...")
