@@ -26,8 +26,8 @@ var library map[string]*books
 
 func storeInLibrary(book books) {
 	if library[book.name] != nil {
-		fmt.Printf("book++ %s %d\n", library[book.name].name, int(library[book.name].stored))
 		library[book.name].stored++
+		fmt.Printf("book++ %s %d\n", library[book.name].name, int(library[book.name].stored))
 	} else {
 		fmt.Printf("stored new book %s\n", book.name)
 		library[book.name] = &book
@@ -68,7 +68,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
 	//fmt.Println("Split to : ", fileName)
 
-	if library[in.GetFileName()].parts == library[in.GetFileName()].stored {
+	if int(library[in.GetFileName()].parts) == int(library[in.GetFileName()].stored) {
 		fmt.Println("ready to join book")
 		joinFile(in.GetFileName(), library[in.GetFileName()].parts)
 	}
