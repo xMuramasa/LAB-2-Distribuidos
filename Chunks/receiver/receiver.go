@@ -29,7 +29,7 @@ func storeInLibrary(book books) {
 		fmt.Printf("book++ %s\t%d\t%d\n", library[book.name].name, library[book.name].parts, library[book.name].stored)
 		library[book.name].stored++
 	} else {
-		fmt.Printf("stored new book %s\t%d\t%d\n", library[book.name].name, library[book.name].parts, library[book.name].stored)
+		fmt.Printf("stored new book %s\t%d\t%d\n", book.name, library[book.name].parts, library[book.name].stored)
 		library[book.name] = &book
 	}
 }
