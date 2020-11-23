@@ -7,7 +7,6 @@ import (
 	"log"
 	"math"
 	"os"
-	"strconv"
 	"time"
 
 	pb "lab2"
@@ -55,13 +54,13 @@ func createChunksForFile(fileName string, c pb.GreeterClient) {
 		file.Read(partBuffer)
 
 		// write to disk
-		fileName := fileName + "_part_" + strconv.FormatUint(i, 10)
-		_, err := os.Create(fileName)
+		//fileName := fileName + "_part_" + strconv.FormatUint(i, 10)
+		//_, err := os.Create(fileName)
 
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		//if err != nil {
+		//	fmt.Println(err)
+		//	os.Exit(1)
+		//}
 
 		// write/save buffer to disk
 		//ioutil.WriteFile(fileName, partBuffer, os.ModeAppend)
