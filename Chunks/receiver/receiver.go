@@ -26,10 +26,10 @@ var library map[string]*books
 
 func storeInLibrary(book books) {
 	if library[book.name] != nil {
-		fmt.Printf("book++ %s\n", book.name)
+		fmt.Printf("book++ %s\t%d\t%d\n", library[book.name].name, library[book.name].parts, library[book.name].stored)
 		library[book.name].stored++
 	} else {
-		fmt.Printf("stored new book %s\n", book.name)
+		fmt.Printf("stored new book %s\t%d\t%d\n", library[book.name].name, library[book.name].parts, library[book.name].stored)
 		library[book.name] = &book
 	}
 }
