@@ -25,9 +25,7 @@ type books struct {
 var library map[string]*books
 
 func storeInLibrary(book books) {
-	if library[book.name] == nil {
-		library[book.name] = &book
-	}
+	library[book.name] = &book
 }
 
 // RequestBook envia un bookinfo a un cliente

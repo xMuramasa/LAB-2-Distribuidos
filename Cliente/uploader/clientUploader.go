@@ -65,10 +65,6 @@ func uploadBook(fileName string, c pb.GreeterClient) {
 	}
 }
 
-func connectToDataNode(book string, address string) {
-
-}
-
 const (
 	//addrs  := [3]string{"dist30:50051", "dist31:50052", "dist32:50053"}
 	clientName = "clientUploader"
