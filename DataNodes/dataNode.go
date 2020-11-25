@@ -59,7 +59,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	defer cancel()
 	// Hacer una consulta
 	tempBook := &pb.BookStoreRequest{
-		BookName:   fileName,
+		BookName:   in.GetFileName(),
 		TotalParts: in.GetPart(),
 	}
 	r, err := c.StoreBook(ctx, tempBook)
