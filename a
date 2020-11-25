@@ -1,0 +1,24 @@
+type books struct {
+	name   string
+	parts  int32
+	stored int32
+}
+
+var library map[string]*books
+
+
+library =>
+    nombrelibro1 = nombre1, parts, ["ip1/<>/1,2,3,4,5,6", "ip2/<>/7,8,9"]
+    nombrelibro2 = nombre2, parts, ["parte ip", "parte ip", "parte ip"]
+
+parte 1
+uploader -> datanode // ok
+
+parte 2
+datanode -> namenode // en proceso
+
+parte 3
+downloader -> namenode  // mas o menos ok
+
+parte 4
+downloader -> datanode // mas o menos ok
