@@ -104,7 +104,7 @@ func ListenToClient(puerto string) {
 }
 
 func main() {
-	go ListenToClient(":50051") // clientes descargas
-	ListenToClient(":50052")    // clientes cargas
+	//go ListenToClient(":50051") // clientes descargas
+	ListenToClient(":50052") // clientes cargas
 
 }
