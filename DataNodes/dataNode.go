@@ -105,6 +105,18 @@ func ListenToClient(puerto string) {
 
 func main() {
 	//go ListenToClient(":50051") // clientes descargas
-	ListenToClient(":50052") // clientes cargas
+	//ListenToClient(":50052") // clientes cargas
+
+	fmt.Println("Esperando solicitudes")
+	lis, err := net.Listen("tcp", ":50052")
+	if err != nil {
+		log.Fatalf("failed to listen1: %v", err)
+	}
+
+	s := grpc.NewServer()
+	pb.RegisterGreeterServer(s, &server{})
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve s1: %v", err)
+	}
 
 }

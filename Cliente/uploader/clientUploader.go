@@ -92,8 +92,6 @@ func main() {
 	// Set up a connection to the server.
 	// Contact the server and print out its response.
 	conn, err := grpc.Dial("dist31:50052", grpc.WithInsecure(), grpc.WithBlock())
-	fmt.Println("----------------------------")
-
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
