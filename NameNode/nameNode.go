@@ -45,6 +45,8 @@ func (s *server) StoreBook(ctx context.Context, in *pb.BookStoreRequest) (*pb.Re
 	// TODO guardar info del libro
 	storeInLibrary(tempBook)
 
+	fmt.Println(library)
+
 	return &pb.Response{Response: "Book succesfuly stored"}, nil
 }
 
