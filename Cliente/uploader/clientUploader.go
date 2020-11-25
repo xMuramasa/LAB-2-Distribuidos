@@ -21,6 +21,8 @@ func uploadBook(fileName string, c pb.GreeterClient) {
 
 	file, err := os.Open(fileToBeChunked)
 
+	fmt.Println("File opened")
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
