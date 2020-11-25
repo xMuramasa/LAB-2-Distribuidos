@@ -66,8 +66,8 @@ func ListenToClient(port string) {
 func main() {
 	library = make(map[string]*books)
 
-	downloads := "dist30:50050"
-	DataNodes := "dist31:50051"
+	downloads := ":50050"
+	DataNodes := ":50051"
 
 	go ListenToClient(downloads) // downloads
 	ListenToClient(DataNodes)    // DataNodes

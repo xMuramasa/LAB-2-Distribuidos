@@ -65,11 +65,10 @@ func uploadBook(fileName string, c pb.GreeterClient) {
 
 func connectToDataNode(book string, address string) {
 
-	
 }
 
 const (
-	addresses  := [3]string{"dist30:50051", "dist31:50052", "dist32:50053"}
+	//addrs  := [3]string{"dist30:50051", "dist31:50052", "dist32:50053"}
 	clientName = "clientUploader"
 )
 
@@ -90,7 +89,7 @@ func main() {
 
 	// Set up a connection to the server.
 	// Contact the server and print out its response.
-	conn, err := grpc.Dial("dist31:50051", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial("dist31:50052", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -98,6 +97,5 @@ func main() {
 	c := pb.NewGreeterClient(conn)
 
 	uploadBook(book, c)
-
 
 }
