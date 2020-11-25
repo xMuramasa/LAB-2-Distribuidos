@@ -183,7 +183,7 @@ func main() {
 	booksData := downloadBookInfo(book, c1)
 
 	//conexion con dataNode
-	conn, err = grpc.Dial("dist30:50051", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err = grpc.Dial("dist31:50051", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
