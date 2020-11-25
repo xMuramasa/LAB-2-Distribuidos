@@ -21,11 +21,6 @@ type books struct {
 	//stored int32
 }
 
-// constantes de los puertos
-const (
-	portSender = ":50051"
-)
-
 // server is used to implement lab2.GreeterServer.
 type server struct {
 	pb.UnimplementedGreeterServer
