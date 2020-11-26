@@ -22,3 +22,10 @@ downloader -> namenode  // mas o menos ok
 
 parte 4
 downloader -> datanode // mas o menos ok
+
+
+>> 1) CU envia chunks
+   2) DN envia porpuesta a NN
+>> 3) NN acepta propuesta o rechaza
+   4) DN envia chunks a los DN
+   5) DN almacenan chunks

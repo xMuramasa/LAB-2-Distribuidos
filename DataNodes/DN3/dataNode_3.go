@@ -43,7 +43,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 
 	// Set up a connection to the NameNode.
 	// Contact the server and print out its response.
-	conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial("dist29:50053", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -100,6 +100,8 @@ func ListenToClient(puerto string) {
 
 func main() {
 	go ListenToClient(":50051") // clientes descargas
-	ListenToClient(":50052")    // clientes cargas
+	go ListenToClient(":50052") // clientes cargas
+	go ListenToClient(":50053") // datanode 1
+	ListenToClient(":50054")    // datanode 2
 
 }

@@ -36,8 +36,6 @@ func uploadBook(fileName string, c pb.GreeterClient) {
 	const fileChunk = 250000
 	totalPartsNum := uint64(math.Ceil(float64(fileSize) / float64(fileChunk)))
 
-	//fmt.Printf("Splitting to %d pieces.\n", totalPartsNum)
-
 	for i := uint64(0); i < totalPartsNum; i++ {
 
 		partSize := int(math.Min(fileChunk, float64(fileSize-int64(i*fileChunk))))
@@ -66,13 +64,12 @@ func uploadBook(fileName string, c pb.GreeterClient) {
 }
 
 const (
-	//addrs  := [3]string{"dist30:50051", "dist31:50052", "dist32:50053"}
 	clientName = "clientUploader"
 )
 
-// Select selecciona aleatoreamente un numero de un array
-func Select() int {
-	in := []int{1, 2, 3}
+// Select selecciona aleatoreamente un dataNode a conectar
+func Select() string {
+	in := [3]string{"dist30:50051", "dist31:50052", "dist32:50053"}
 	randomIndex := rand.Intn(len(in))
 	pick := in[randomIndex]
 
@@ -87,7 +84,7 @@ func main() {
 
 	// Set up a connection to the server.
 	// Contact the server and print out its response.
-	conn, err := grpc.Dial("dist31:50052", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(Select(), grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
