@@ -192,11 +192,9 @@ func ListenToClient(port string) {
 func main() {
 	library = make(map[string]*books)
 
-	downloads := ":50050"
-
-	go ListenToClient(downloads) // downloads
-	go ListenToClient(":50051")  // DataNode 1
-	go ListenToClient(":50052")  // DataNodes 2
-	ListenToClient(":50053")     // DataNodes 3
+	go ListenToClient(":50051") // DataNode 1
+	go ListenToClient(":50052") // DataNode 2
+	go ListenToClient(":50053") // DataNode 3
+	ListenToClient(":50054")    // Cliente Descargas
 
 }

@@ -22,6 +22,7 @@ package lab2;
 service Greeter {
     // Sends a chunk
     rpc ReceiveChunk (StoreRequest) returns (StoreReply) {}
+    rpc StoreChunk (StoreRequest) returns (StoreReply) {}
     rpc RequestBook (BookRequest) returns (BookReply1) {}
     rpc RequestChunk (BookRequest) returns (BookReply2) {}
     rpc StoreBook (BookStoreRequest) returns (Message) {}

@@ -1,31 +1,41 @@
-type books struct {
-	name   string
-	parts  int32
-	stored int32
-}
-
-var library map[string]*books
-
-
-library =>
-    nombrelibro1 = nombre1, parts, ["ip1/<>/1,2,3,4,5,6", "ip2/<>/7,8,9"]
-    nombrelibro2 = nombre2, parts, ["parte ip", "parte ip", "parte ip"]
-
 parte 1
 uploader -> datanode // ok
-
-parte 2
 datanode -> namenode // en proceso
-
-parte 3
 downloader -> namenode  // mas o menos ok
-
-parte 4
 downloader -> datanode // mas o menos ok
 
-
+parte2
 >> 1) CU envia chunks
-   2) DN envia porpuesta a NN
+>> 2) DN envia porpuesta a NN
 >> 3) NN acepta propuesta o rechaza
-   4) DN envia chunks a los DN
-   5) DN almacenan chunks
+>> 4) DN envia chunks a los DN
+>> 5) DN almacenan chunks
+
+NN: namenode -> dist29
+DN1: datanode1 -> dist31
+DN2: datanode2 ->dist30
+DN3: datanode3 ->dist32
+CD: cliente descargas -> dist30
+CU: cliente cargas -> dist30
+
+DN1 escucha CD : 50051
+DN2 escucha CD : 50051
+DN3 escucha CD : 50051
+
+DN1 escucha CU : 50052
+DN2 escucha CU : 50052
+DN3 escucha CU : 50052
+
+DN1 escucha DN2 : 50053
+DN1 escucha DN3 : 50054
+
+DN2 escucha DN1 : 50053
+DN2 escucha DN3 : 50054
+
+DN3 escucha DN1 : 50053
+DN3 escucha DN2 : 50054
+
+NN escucha DN1 : 50051
+NN escucha DN2 : 50052
+NN escucha DN3 : 50053
+NN escucha CD  : 50054

@@ -8,12 +8,23 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	pb "lab2"
 
 	"google.golang.org/grpc"
 )
+
+const (
+	clientName = "DATANODE1"
+)
+
+// server is used to implement lab2.GreeterServer.
+type server struct {
+	pb.UnimplementedGreeterServer
+}
 
 type books struct {
 	name   string
@@ -23,24 +34,6 @@ type books struct {
 }
 
 var storage map[string]*books
-
-// server is used to implement lab2.GreeterServer.
-type server struct {
-	pb.UnimplementedGreeterServer
-}
-
-type bookPart struct {
-	name string
-	part []byte
-}
-
-var library map[string]*bookPart
-
-func store(b bookPart) {
-	if library[b.name] == nil {
-		library[b.name] = &b
-	}
-}
 
 func storeInStorage(b books, title string, chunk string) {
 	if storage[b.name] == nil {
@@ -64,6 +57,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	}
 	storeInStorage(tempBook, tempBook.titles[0], tempBook.chunks[0])
 
+	//if libro completo, realizar solicitud
 	//if got all chunks -> debo avisar a nnode y repartir entre dnodes
 	lenTitles := len(storage[tempBook.name].titles)
 	lenChunks := len(storage[tempBook.name].chunks)
@@ -71,7 +65,8 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 		//prepare Proposal
 		partsPerNode := int(int(storage[tempBook.name].parts) / 3)
 		rest := int(storage[tempBook.name].parts) % 3
-		message := fmt.Sprintf("%s**%d**%d**%d**%d", tempBook.name,
+		message := fmt.Sprintf("%s**%d**%d**%d**%d",
+			tempBook.name,
 			partsPerNode+rest,
 			partsPerNode,
 			partsPerNode,
@@ -93,29 +88,94 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 		}
 
 		//deal with response in r
+		c1 := 0
+		c2 := 0
+		c3 := 0
+		var t []string
+		var i int
+		var j int
 		if r.GetM() == "A" {
 			//propuesta aceptada -> repartir con message
+			t = strings.Split(message, "**")
+			c1, _ = strconv.Atoi(t[1])
+			c2, _ = strconv.Atoi(t[2])
+			c3, _ = strconv.Atoi(t[3])
+
 		} else {
-			//propuesta rechazada -> repartir con r
+			//propesta rechazada -> repartir con r
+			t = strings.Split(r.GetM(), "**")
+			c1, _ = strconv.Atoi(t[1])
+			c2, _ = strconv.Atoi(t[2])
+			c3, _ = strconv.Atoi(t[3])
 		}
 
+		//soy dn1 guardo c1 chunks
+		if c1 != 0 {
+			for i = 0; i < c1; i++ {
+				fileName := "./stored/" + in.GetFileName() + "_part_" + fmt.Sprintf("%d", i)
+				_, err := os.Create(fileName)
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
+				ioutil.WriteFile(fileName, []byte(storage[tempBook.name].chunks[i]), os.ModeAppend)
+			}
+		}
+
+		// enviar c2 chunks a dn2
+		if c2 != 0 {
+			j = SendToDataNode(i, c2+i, "dist30:50053", tempBook.name)
+		}
+
+		// enviar c3 chunks a dn3
+		if c3 != 0 {
+			j = SendToDataNode(j, c3+j, "dist32:50053", tempBook.name)
+		}
 	}
+	return &pb.StoreReply{Message: "Received & stored chunk"}, nil
+}
+
+//SendToDataNode sends chunks to specified datanode at ip
+func SendToDataNode(initalIt int, endIt int, ip string, bookName string) int {
+	var j int
+	for j = initalIt; j < endIt; j++ {
+		conn, err := grpc.Dial(ip, grpc.WithInsecure(), grpc.WithBlock())
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+		defer conn.Close()
+		c := pb.NewGreeterClient(conn)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		r, err := c.StoreChunk(ctx, &pb.StoreRequest{
+			ChunkPart:  fmt.Sprintf("%d", j),
+			FileName:   bookName,
+			ClientName: clientName,
+			Chunk:      []byte(storage[bookName].chunks[j]),
+			Part:       storage[bookName].parts})
+		if err != nil {
+			log.Fatalf("could not greet: %v", err)
+		}
+		log.Printf("Stored Chunk: %s", r)
+	}
+	return j
+}
+
+func (s *server) StoreChunk(ctx context.Context, in *pb.StoreRequest) (*pb.StoreReply, error) {
+	log.Printf("Received: chunk 250kb. From: %v", in.GetClientName())
 
 	// write to disk
-	//fileName := "./stored/" + in.GetFileName() + "_part_" + in.GetChunkPart()
-	//_, err := os.Create(fileName)
-	/*
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	*/
+	fileName := "./stored/" + in.GetFileName() + "_part_" + in.GetChunkPart()
+	_, err := os.Create(fileName)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	// write/save buffer to disk
-	//ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
+	ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
 
-	//if libro completo, realizar solicitud
-
-	return &pb.StoreReply{Message: "Received & stored chunk"}, nil
+	return &pb.StoreReply{Message: "Received chunk & stored in disk"}, nil
 }
 
 // RequestChunk envia un chunk a un cliente
@@ -139,7 +199,6 @@ func (s *server) Greeting(ctx context.Context, in *pb.Message) (*pb.Message, err
 
 //ListenToClient listener
 func ListenToClient(puerto string) {
-	//--------------------------------------------------------------> Server1
 	fmt.Println("Esperando solicitudes")
 	lis, err := net.Listen("tcp", puerto)
 	if err != nil {
@@ -155,7 +214,6 @@ func ListenToClient(puerto string) {
 }
 
 func main() {
-	library = make(map[string]*bookPart)
 	storage = make(map[string]*books)
 
 	go ListenToClient(":50051") // clientes descargas
