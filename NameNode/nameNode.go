@@ -165,7 +165,7 @@ func connectToDataNode(dataNode string) string {
 //ListenToClient listener
 func ListenToClient(port string) {
 	//--------------------------------------------------------------> Server1
-	log.Println("Esperando solicitudes en puerto", puerto)
+	log.Println("Esperando solicitudes en puerto", port)
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen1: %v", err)
