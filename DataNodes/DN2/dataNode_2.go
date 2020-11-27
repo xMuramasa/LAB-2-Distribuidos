@@ -111,7 +111,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 
 		// enviar c1 chunks a dn1
 		if c1 != 0 {
-			j = SendToDataNode(0, c1, "dist29:50053", tempBook.name)
+			j = SendToDataNode(0, c1, "dis31:50053", tempBook.name)
 		}
 
 		//soy dn2 guardo c2 chunks
