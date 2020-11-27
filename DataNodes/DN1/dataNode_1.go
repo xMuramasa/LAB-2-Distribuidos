@@ -75,7 +75,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 		//send proposal
 		conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
 		if err != nil {
-			log.Fatalf("did not connect: %v", err)
+			log.Fatalf("[RECEIVE CHUNK] did not connect: %v", err)
 		}
 		defer conn.Close()
 		c := pb.NewGreeterClient(conn)
@@ -84,7 +84,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 		r, err := c.Proposal(ctx, &pb.Message{
 			M: message})
 		if err != nil {
-			log.Fatalf("could not greet: %v", err)
+			log.Fatalf("[RECEIVE CHUNK] could not greet: %v", err)
 		}
 
 		//deal with response in r
@@ -141,7 +141,7 @@ func SendToDataNode(initalIt int, endIt int, ip string, bookName string) int {
 	for j = initalIt; j < endIt; j++ {
 		conn, err := grpc.Dial(ip, grpc.WithInsecure(), grpc.WithBlock())
 		if err != nil {
-			log.Fatalf("did not connect: %v", err)
+			log.Fatalf("[SEND CHUNK] did not connect: %v", err)
 		}
 		defer conn.Close()
 		c := pb.NewGreeterClient(conn)
@@ -154,9 +154,9 @@ func SendToDataNode(initalIt int, endIt int, ip string, bookName string) int {
 			Chunk:      []byte(storage[bookName].chunks[j]),
 			Part:       storage[bookName].parts})
 		if err != nil {
-			log.Fatalf("could not greet: %v", err)
+			log.Fatalf("[SEND CHUNK] could not greet: %v", err)
 		}
-		log.Printf("Stored Chunk: %s", r)
+		log.Printf("[SEND CHUNK] Stored Chunk: %s", r)
 	}
 	return j
 }
