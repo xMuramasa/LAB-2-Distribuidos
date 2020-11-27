@@ -17,9 +17,9 @@ import (
 )
 
 const (
-	dataNode1 = ""
-	dataNode2 = ""
-	dataNode3 = ""
+	dataNode1 = "dist31:50050"
+	dataNode2 = "dist30:50050"
+	dataNode3 = "dist32:50050"
 )
 
 // server is used to implement lab2.GreeterServer.
@@ -156,7 +156,7 @@ func connectToDataNode(dataNode string) string {
 	}
 	r, err := c.Greeting(ctx, m)
 	if err != nil {
-		log.Fatalf("could not greet: %s --- %v", dataNode, err)
+		log.Fatalf("[CONNECT TO DN] could not greet: %s --- %v", dataNode, err)
 		return "0"
 	}
 	return r.GetM()

@@ -26,12 +26,15 @@ DN1 escucha CU : 50052
 DN2 escucha CU : 50052
 DN3 escucha CU : 50052
 
+DN1 escucha NN : 50050
 DN1 escucha DN2 : 50053
 DN1 escucha DN3 : 50054
 
+DN2 escucha NN : 50050
 DN2 escucha DN1 : 50053
 DN2 escucha DN3 : 50054
 
+DN3 escucha NN : 50050
 DN3 escucha DN1 : 50053
 DN3 escucha DN2 : 50054
 

@@ -216,6 +216,7 @@ func ListenToClient(puerto string) {
 func main() {
 	storage = make(map[string]*books)
 
+	go ListenToClient(":50050") // NameNode
 	go ListenToClient(":50051") // clientes descargas
 	go ListenToClient(":50052") // clientes cargas
 	go ListenToClient(":50053") // datanode 1
