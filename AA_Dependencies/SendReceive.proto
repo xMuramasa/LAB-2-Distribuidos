@@ -22,9 +22,12 @@ package lab2;
 service Greeter {
     // Sends a chunk
     rpc ReceiveChunk (StoreRequest) returns (StoreReply) {}
+    rpc StoreChunk (StoreRequest) returns (StoreReply) {}
     rpc RequestBook (BookRequest) returns (BookReply1) {}
     rpc RequestChunk (BookRequest) returns (BookReply2) {}
-    rpc StoreBook (BookStoreRequest) returns (Response) {}
+    rpc StoreBook (BookStoreRequest) returns (Message) {}
+    rpc Proposal (Message) returns (Message) {}
+    rpc Greeting (Message) returns (Message) {}
 }
 
 // The request message containing the chunk's name and clientName.
@@ -45,6 +48,10 @@ message BookRequest{
     string bookNamePart = 1;
 }
 
+message Message{
+    string m = 1;
+}
+
 // The response message containing the action
 message StoreReply {
     string message = 1;
@@ -57,8 +64,4 @@ message BookReply1 {
 
 message BookReply2 {
     bytes chunk = 1;
-}
-
-message Response{
-    string response = 1;
 }

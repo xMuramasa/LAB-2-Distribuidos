@@ -160,7 +160,6 @@ func joinFile(fileName string, totalParts int32) {
 }
 
 const (
-	//addresses  := [3]string{"dist30:50051", "dist31:50052", "dist32:50053"}
 	clientName = "clientUploader"
 )
 
