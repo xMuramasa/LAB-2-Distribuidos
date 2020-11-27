@@ -53,11 +53,14 @@ func Exists(name string) bool {
 
 // RequestBook envia un bookinfo a un cliente
 func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookReply1, error) {
-	i, err := strconv.Atoi(library[in.GetBookNamePart()].parts)
-	if err != nil {
-		log.Fatal("could convert to int")
-	}
-	return &pb.BookReply1{Parts: int32(i)}, nil
+
+	b := fmt.Sprintf("%s**%s**%s**%s**%s",
+		library[in.GetBookNamePart()].name,
+		library[in.GetBookNamePart()].c1,
+		library[in.GetBookNamePart()].c2,
+		library[in.GetBookNamePart()].c3,
+		library[in.GetBookNamePart()].parts)
+	return &pb.BookReply1{Locations: b}, nil
 }
 
 func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, error) {

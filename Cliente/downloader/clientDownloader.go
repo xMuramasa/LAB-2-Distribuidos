@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	pb "lab2"
@@ -15,12 +16,16 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	clientName = "clientDownloader"
+)
+
 // server is used to implement lab2.GreeterServer.
 type server struct {
 	pb.UnimplementedGreeterServer
 }
 
-func downloadBookInfo(fileName string, c pb.GreeterClient) int32 {
+func downloadBookInfo(fileName string, c pb.GreeterClient) string {
 	// generacion de bookRequest para nameNode
 	storeRequest := &pb.BookRequest{
 		BookNamePart: fileName,
@@ -34,7 +39,7 @@ func downloadBookInfo(fileName string, c pb.GreeterClient) int32 {
 		log.Fatalf("could not greet: %v", err)
 	}
 
-	return r.GetParts()
+	return r.GetLocations()
 }
 
 func downloadChunks(fileName string, c pb.GreeterClient) {
@@ -159,42 +164,50 @@ func joinFile(fileName string, totalParts int32) {
 	file.Close()
 }
 
-const (
-	clientName = "clientUploader"
-)
+func connectAndDownload(fileName string, host string, nChunks int, start int) int {
+	//conexion con dataNode
+	var i int
+	conn, err := grpc.Dial(host, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewGreeterClient(conn)
+
+	for i = start; i < nChunks; i++ {
+		downloadChunks(fileName+"_part_"+fmt.Sprint(i), c)
+	}
+	return i
+}
 
 func main() {
 
 	var book string
 	fmt.Println("Ingresa nombre del libro que quieres descargar: ")
 	fmt.Scan(&book)
-	//connectToDataNode(book, addresses[rand.Intn(len(addresses))])
 
-	//conexion con nameNode
+	//conexion con nameNodes := strings.Split("a,b,c", ",")
 	// Set up a connection to the server. Contact the server and print out its response.
-	conn, err := grpc.Dial("dist29:50050", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial("dist29:50054", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c1 := pb.NewGreeterClient(conn)
+	c := pb.NewGreeterClient(conn)
 
-	booksData := downloadBookInfo(book, c1)
+	bookData := strings.Split(downloadBookInfo(book, c), "**")
 
-	//conexion con dataNode
-	conn, err = grpc.Dial("dist31:50051", grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-	c2 := pb.NewGreeterClient(conn)
+	c1, _ := strconv.Atoi(bookData[1])
+	c2, _ := strconv.Atoi(bookData[2])
+	c3, _ := strconv.Atoi(bookData[3])
+	totalParts, _ := strconv.Atoi(bookData[4])
 
-	for i := 0; i < int(booksData); i++ {
-		downloadChunks(book+"_part_"+fmt.Sprint(i), c2)
-	}
+	i := connectAndDownload(book, "dist31:50051", c1, 0)
+	j := connectAndDownload(book, "dist30:50051", c2+i, i)
+	_ = connectAndDownload(book, "dist32:50051", c3+j, j)
 
 	// union archivo descargado
-	joinFile(book, booksData)
+	joinFile(book, int32(totalParts))
 	fmt.Println("Libro Descargado")
 
 }
