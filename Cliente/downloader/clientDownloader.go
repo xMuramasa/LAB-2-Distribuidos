@@ -63,7 +63,7 @@ func downloadChunks(fileName string, c pb.GreeterClient) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	ioutil.WriteFile(fileName, r.GetChunk(), os.ModeAppend)
+	ioutil.WriteFile(file, r.GetChunk(), os.ModeAppend)
 }
 
 //JoinFile ensambla un archivo separado en chunks, asume que todas las partes estan descargadas
