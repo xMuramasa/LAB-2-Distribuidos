@@ -50,24 +50,9 @@ func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookR
 	return &pb.BookReply1{Parts: int32(i)}, nil
 }
 
-/*
-// StoreBook guarda un libro en el log
-func (s *server) StoreBook(ctx context.Context, in *pb.BookStoreRequest) (*pb.Message, error) {
-
-	tempBook := books{
-		name:  in.GetBookName(),
-		parts: in.GetTotalParts(),
-	}
-	// TODO guardar info del libro
-	storeInLibrary(tempBook)
-
-	fmt.Println(library)
-
-	return &pb.Message{M: "Book succesfuly stored"}, nil
-}
-*/
-
 func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, error) {
+
+	log.Println("Received proposal.")
 
 	var i int
 	var j int
@@ -81,6 +66,8 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 	// if c1 down -> proposal[1] = 0,
 	//			proposal[2] = proposal[2] + proposal[1],
 	//			proposal[3] = proposal[3],
+
+	log.Println("Checking availability of datanodes.")
 
 	// checkear que los 3 DN estan vivos
 	if connectToDataNode(dataNode1) == "0" {
@@ -121,6 +108,7 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 	//guardar info del libro
 	storeInLibrary(tempBook)
 
+	log.Println("Writing log file.")
 	//write
 	fileName := "log.txt"
 	_, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
@@ -148,7 +136,7 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 
 	ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
 	//defer f.Close()
-
+	log.Println("Accpeting proposal.")
 	return &pb.Message{M: "A"}, nil
 }
 
