@@ -150,7 +150,7 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 
 	nChunks, _ = strconv.Atoi(library[tempBook.name].c3)
 	for k = 0; k < nChunks; k++ {
-		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j) + " " + dataNode3 + "\n"
+		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j+i) + " " + dataNode3 + "\n"
 	}
 
 	ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
