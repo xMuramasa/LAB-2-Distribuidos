@@ -199,7 +199,7 @@ func (s *server) Greeting(ctx context.Context, in *pb.Message) (*pb.Message, err
 
 //ListenToClient listener
 func ListenToClient(puerto string) {
-	fmt.Println("Esperando solicitudes")
+	log.Println("Esperando solicitudes en puerto", puerto)
 	lis, err := net.Listen("tcp", puerto)
 	if err != nil {
 		log.Fatalf("failed to listen1: %v", err)
