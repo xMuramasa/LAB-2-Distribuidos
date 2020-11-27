@@ -73,6 +73,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 			tempBook.parts)
 
 		//send proposal
+		log.Println("[RECEIVE CHUNK] Proposal", message)
 		conn, err := grpc.Dial("dist29:50052", grpc.WithInsecure(), grpc.WithBlock())
 		if err != nil {
 			log.Fatalf("[RECEIVE CHUNK] did not connect: %v", err)
