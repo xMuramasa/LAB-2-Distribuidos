@@ -135,6 +135,23 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	return &pb.StoreReply{Message: "Received & stored chunk"}, nil
 }
 
+func (s *server) StoreChunk(ctx context.Context, in *pb.StoreRequest) (*pb.StoreReply, error) {
+	log.Printf("Received: chunk 250kb. From: %v", in.GetClientName())
+
+	// write to disk
+	fileName := "./stored/" + in.GetFileName() + "_part_" + in.GetChunkPart()
+	_, err := os.Create(fileName)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	// write/save buffer to disk
+	ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
+
+	return &pb.StoreReply{Message: "Received chunk & stored in disk"}, nil
+}
+
 //SendToDataNode sends chunks to specified datanode at ip
 func SendToDataNode(initalIt int, endIt int, ip string, bookName string) int {
 	var j int
@@ -159,23 +176,6 @@ func SendToDataNode(initalIt int, endIt int, ip string, bookName string) int {
 		log.Printf("[SEND CHUNK] Stored Chunk: %s", r)
 	}
 	return j
-}
-
-func (s *server) StoreChunk(ctx context.Context, in *pb.StoreRequest) (*pb.StoreReply, error) {
-	log.Printf("Received: chunk 250kb. From: %v", in.GetClientName())
-
-	// write to disk
-	fileName := "./stored/" + in.GetFileName() + "_part_" + in.GetChunkPart()
-	_, err := os.Create(fileName)
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	// write/save buffer to disk
-	ioutil.WriteFile(fileName, in.GetChunk(), os.ModeAppend)
-
-	return &pb.StoreReply{Message: "Received chunk & stored in disk"}, nil
 }
 
 // RequestChunk envia un chunk a un cliente
