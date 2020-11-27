@@ -41,6 +41,16 @@ func storeInLibrary(book books) {
 	library[book.name] = &book
 }
 
+// Exists reports whether the named file or directory exists.
+func Exists(name string) bool {
+	if _, err := os.Stat(name); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
+
 // RequestBook envia un bookinfo a un cliente
 func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookReply1, error) {
 	i, err := strconv.Atoi(library[in.GetBookNamePart()].parts)
@@ -109,27 +119,36 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 	storeInLibrary(tempBook)
 
 	log.Println("Writing log file.")
+
 	//write
 	fileName := "log.txt"
-	_, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	if Exists(fileName) {
+		_, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	} else {
+		_, err := os.Create(fileName)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
 
-	nChunks, err := strconv.Atoi(library[tempBook.name].c1)
+	nChunks, _ := strconv.Atoi(library[tempBook.name].c1)
 	for i = 0; i < nChunks; i++ {
 		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", i) + " " + dataNode1 + "\n"
 	}
 
-	nChunks, err = strconv.Atoi(library[tempBook.name].c2)
+	nChunks, _ = strconv.Atoi(library[tempBook.name].c2)
 	for j = 0; j < nChunks; j++ {
 		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", j+i) + " " + dataNode2 + "\n"
 	}
 
-	nChunks, err = strconv.Atoi(library[tempBook.name].c3)
+	nChunks, _ = strconv.Atoi(library[tempBook.name].c3)
 	for k = 0; k < nChunks; k++ {
 		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j) + " " + dataNode3 + "\n"
 	}
