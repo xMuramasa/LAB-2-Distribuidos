@@ -22,6 +22,8 @@ const (
 	dataNode3 = "dist32:50050"
 )
 
+var algoritmo bool //true = centralizado; false: distribuido
+
 // server is used to implement lab2.GreeterServer.
 type server struct {
 	pb.UnimplementedGreeterServer
@@ -263,6 +265,16 @@ func ListenToClient(port string) {
 
 func main() {
 	library = make(map[string]*books)
+
+	var a string
+	fmt.Println("Selecciona el tipo de algoritmo que deseas utilizar (numero): ")
+	fmt.Println("[1] Centralizado \n [2] Distribuido")
+	fmt.Print("Seleccion: ")
+	fmt.Scan(&a)
+
+	if a == "2" {
+		algoritmo = false
+	}
 
 	go ListenToClient(":50051") // DataNode 1
 	go ListenToClient(":50052") // DataNode 2

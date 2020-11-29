@@ -73,7 +73,7 @@ func dataNodeProposal(ip string, mensaje string) bool {
 func (s *server) RichardAgrawala(ctx context.Context, in *pb.Conflict) (*pb.Conflict, error) {
 	if writing.Front() != nil {
 		return &pb.Conflict{
-			ClientName: "dist31",
+			ClientName: "dist32",
 			Time:       "inf",
 		}, nil
 	}
@@ -87,7 +87,7 @@ func (s *server) RichardAgrawala(ctx context.Context, in *pb.Conflict) (*pb.Conf
 	if now.Before(t) {
 		//wait para escribir
 		log.Println("[WRITE REQUEST] Proposal", message)
-		conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
+		conn, err := grpc.Dial("dist29:50053", grpc.WithInsecure(), grpc.WithBlock())
 		if err != nil {
 			log.Fatalf("[WRITE REQUEST] did not connect: %v", err)
 		}
@@ -104,7 +104,7 @@ func (s *server) RichardAgrawala(ctx context.Context, in *pb.Conflict) (*pb.Conf
 	}
 
 	return &pb.Conflict{
-		ClientName: "dist31",
+		ClientName: "dist32",
 		Time:       "inf",
 	}, nil
 
