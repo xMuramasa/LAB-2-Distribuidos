@@ -268,7 +268,7 @@ func main() {
 
 	var a string
 	fmt.Println("Selecciona el tipo de algoritmo que deseas utilizar (numero): ")
-	fmt.Println("[1] Centralizado \n [2] Distribuido")
+	fmt.Println("[1] Centralizado \n[2] Distribuido")
 	fmt.Print("Seleccion: ")
 	fmt.Scan(&a)
 

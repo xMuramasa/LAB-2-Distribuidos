@@ -71,7 +71,7 @@ func dataNodeProposal(ip string, mensaje string) bool {
 
 // RichardAgrawala resuleve colisiones posibles
 func (s *server) RichardAgrawala(ctx context.Context, in *pb.Conflict) (*pb.Conflict, error) {
-	if writing.Front() != nil {
+	if writing.Front() == nil {
 		return &pb.Conflict{
 			ClientName: "dist31",
 			Time:       "inf",
@@ -366,7 +366,7 @@ func main() {
 
 	var a string
 	fmt.Println("Selecciona el tipo de algoritmo que deseas utilizar (numero): ")
-	fmt.Println("[1] Centralizado \n [2] Distribuido")
+	fmt.Println("[1] Centralizado \n[2] Distribuido")
 	fmt.Print("Seleccion: ")
 	fmt.Scan(&a)
 
