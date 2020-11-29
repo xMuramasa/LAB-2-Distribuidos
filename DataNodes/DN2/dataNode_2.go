@@ -219,9 +219,11 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 
 			if stat1 == false {
 				c2 = c1 + c2
+				c1 = 0
 			}
 			if stat3 == false {
 				c2 = c2 + c3
+				c3 = 0
 			}
 
 			//enviar tiempo, msg a dn
@@ -233,14 +235,14 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 				if calls[0] != "" && calls[1] != "" {
 					break
 				}
-				calls[0] = CallRichardAgrawalla("dist31:50053")
-				calls[1] = CallRichardAgrawalla("dist32:50054")
+				calls[0] = CallRichardAgrawalla("dist31:50053") //dn1
+				calls[1] = CallRichardAgrawalla("dist32:50054") //dn3
 			}
 
 			e := writing.Front()
 
 			log.Println("[RECEIVE CHUNK] Proposal", message)
-			conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
+			conn, err := grpc.Dial("dist29:50052", grpc.WithInsecure(), grpc.WithBlock())
 			if err != nil {
 				log.Fatalf("[RECEIVE CHUNK] did not connect: %v", err)
 			}

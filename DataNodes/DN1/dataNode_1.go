@@ -219,9 +219,11 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 
 			if stat2 == false {
 				c1 = c1 + c2
+				c2 = 0
 			}
 			if stat3 == false {
 				c1 = c1 + c3
+				c3 = 0
 			}
 
 			//enviar tiempo, msg a dn
@@ -233,8 +235,8 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 				if calls[0] != "" && calls[1] != "" {
 					break
 				}
-				calls[0] = CallRichardAgrawalla("dist30:50053")
-				calls[1] = CallRichardAgrawalla("dist32:50053")
+				calls[0] = CallRichardAgrawalla("dist30:50053") //dn1
+				calls[1] = CallRichardAgrawalla("dist32:50053") //dn2
 			}
 
 			e := writing.Front()

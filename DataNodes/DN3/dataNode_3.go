@@ -175,7 +175,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 		if algoritmo == true {
 			//send proposal
 			log.Println("[RECEIVE CHUNK] Proposal", message)
-			conn, err := grpc.Dial("dist29:50052", grpc.WithInsecure(), grpc.WithBlock())
+			conn, err := grpc.Dial("dist29:50053", grpc.WithInsecure(), grpc.WithBlock())
 			if err != nil {
 				log.Fatalf("[RECEIVE CHUNK] did not connect: %v", err)
 			}
@@ -210,17 +210,19 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 			c1, _ = strconv.Atoi(t[1])
 			c2, _ = strconv.Atoi(t[2])
 			c3, _ = strconv.Atoi(t[3])
-			//porposal a dn2
+			//porposal a dn1
 			stat1 := dataNodeProposal("dist31:50054", message)
 
-			//porposal a dn3
+			//porposal a dn2
 			stat2 := dataNodeProposal("dist30:50054", message)
 
 			if stat1 == false {
 				c3 = c1 + c3
+				c1 = 0
 			}
 			if stat2 == false {
 				c3 = c2 + c3
+				c2 = 0
 			}
 
 			//enviar tiempo, msg a dn
@@ -232,14 +234,14 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 				if calls[0] != "" && calls[1] != "" {
 					break
 				}
-				calls[0] = CallRichardAgrawalla("dist31:50054")
-				calls[1] = CallRichardAgrawalla("dist30:50054")
+				calls[0] = CallRichardAgrawalla("dist31:50054") //dn1
+				calls[1] = CallRichardAgrawalla("dist30:50054") //dn2
 			}
 
 			e := writing.Front()
 
 			log.Println("[RECEIVE CHUNK] Proposal", message)
-			conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
+			conn, err := grpc.Dial("dist29:50053", grpc.WithInsecure(), grpc.WithBlock())
 			if err != nil {
 				log.Fatalf("[RECEIVE CHUNK] did not connect: %v", err)
 			}
