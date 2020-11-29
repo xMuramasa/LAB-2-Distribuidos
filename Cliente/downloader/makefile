@@ -2,7 +2,7 @@ make:
 	go run *.go
 
 cleanDownload:
-	rm /downloads/*
+	rm - rf /downloads/*
 
 cleanRestored:
-	rm /restored/*
+	rm -rf /restored/*

@@ -2,4 +2,4 @@ make:
 	go run *.go
 
 clean:
-	rm /stored/*
+	rm - rf /stored/*
