@@ -373,6 +373,7 @@ func main() {
 	fmt.Println("[1] Centralizado \n[2] Distribuido")
 	fmt.Print("Seleccion: ")
 	fmt.Scan(&a)
+	algoritmo = true
 
 	if a == "2" {
 		algoritmo = false
