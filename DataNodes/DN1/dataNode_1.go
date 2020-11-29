@@ -172,6 +172,8 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 		var t []string
 		var i int
 		var j int
+		log.Println(c1, c2, c3)
+
 		// CENTRALIZADO
 		if algoritmo == true {
 			//send proposal
@@ -205,6 +207,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 				c2, _ = strconv.Atoi(t[2])
 				c3, _ = strconv.Atoi(t[3])
 			}
+
 		} else { // DISTRIBUIDO
 			// Algo distribuido
 			t = strings.Split(message, "**")
@@ -257,6 +260,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 			}
 			writing.Remove(e)
 		}
+		log.Println(c1, c2, c3)
 
 		//ENVIO DE CHUNKS A LOS DN
 		//soy dn1 guardo c1 chunks

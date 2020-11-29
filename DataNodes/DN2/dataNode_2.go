@@ -172,6 +172,8 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 		var t []string
 		var i int
 		var j int
+		log.Println(c1, c2, c3)
+
 		// CENTRALIZADO
 		if algoritmo == true {
 			//send proposal
@@ -257,6 +259,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 			}
 			writing.Remove(e)
 		}
+		log.Println(c1, c2, c3)
 
 		//ENVIO DE CHUNKS A LOS DN
 		// enviar c1 chunks a dn1
