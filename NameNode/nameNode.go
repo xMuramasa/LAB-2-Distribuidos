@@ -63,6 +63,68 @@ func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookR
 	return &pb.BookReply1{Locations: b}, nil
 }
 
+func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message, error) {
+
+	log.Println("Received Writing Request.")
+
+	var i int
+	var j int
+	var k int
+
+	proposal := strings.Split(in.GetM(), "**") //nombre**c1**c2**c3**total
+
+	//guardamos
+	tempBook := books{
+		name:  proposal[0],
+		c1:    proposal[1],
+		c2:    proposal[2],
+		c3:    proposal[3],
+		parts: proposal[4],
+	}
+	//guardar info del libro
+	storeInLibrary(tempBook)
+
+	log.Println("Writing log file.")
+
+	//write
+	fileName := "log.txt"
+	if Exists(fileName) {
+		_, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	} else {
+		_, err := os.Create(fileName)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
+	buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
+
+	nChunks, _ := strconv.Atoi(library[tempBook.name].c1)
+	for i = 0; i < nChunks; i++ {
+		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", i) + " " + dataNode1 + "\n"
+	}
+
+	nChunks, _ = strconv.Atoi(library[tempBook.name].c2)
+	for j = 0; j < nChunks; j++ {
+		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", j+i) + " " + dataNode2 + "\n"
+	}
+
+	nChunks, _ = strconv.Atoi(library[tempBook.name].c3)
+	for k = 0; k < nChunks; k++ {
+		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j+i) + " " + dataNode3 + "\n"
+	}
+
+	ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
+	//defer f.Close()
+	log.Println("Accpeting proposal.")
+	return &pb.Message{M: "A"}, nil
+}
+
 func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, error) {
 
 	log.Println("Received proposal.")

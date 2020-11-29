@@ -28,6 +28,8 @@ service Greeter {
     rpc StoreBook (BookStoreRequest) returns (Message) {}
     rpc Proposal (Message) returns (Message) {}
     rpc Greeting (Message) returns (Message) {}
+    rpc RichardAgrawala (conflict) returns (conflict) {}
+    rpc WriteRequest (Message) returns (Message) {}
 }
 
 // The request message containing the chunk's name and clientName.
@@ -50,6 +52,11 @@ message BookRequest{
 
 message Message{
     string m = 1;
+}
+
+message conflict{
+    string time = 1;
+    string clientName = 2;
 }
 
 // The response message containing the action

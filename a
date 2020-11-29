@@ -11,30 +11,30 @@ parte2
 >> 4) DN envia chunks a los DN
 >> 5) DN almacenan chunks
 
-NN: namenode -> dist29
-DN1: datanode1 -> dist31
-DN2: datanode2 ->dist30
-DN3: datanode3 ->dist32
-CD: cliente descargas -> dist30
-CU: cliente cargas -> dist30
+NN  : namenode          -> dist29
+DN1 : datanode1         -> dist31
+DN2 : datanode2         -> dist30
+DN3 : datanode3         -> dist32
+CD  : cliente descargas -> dist30
+CU  : cliente cargas    -> dist30
 
-DN1 escucha CD : 50051
-DN2 escucha CD : 50051
-DN3 escucha CD : 50051
+DN1 escucha CD  : 50051
+DN2 escucha CD  : 50051
+DN3 escucha CD  : 50051
 
-DN1 escucha CU : 50052
-DN2 escucha CU : 50052
-DN3 escucha CU : 50052
+DN1 escucha CU  : 50052
+DN2 escucha CU  : 50052
+DN3 escucha CU  : 50052
 
-DN1 escucha NN : 50050
+DN1 escucha NN  : 50050
 DN1 escucha DN2 : 50053
 DN1 escucha DN3 : 50054
 
-DN2 escucha NN : 50050
+DN2 escucha NN  : 50050
 DN2 escucha DN1 : 50053
 DN2 escucha DN3 : 50054
 
-DN3 escucha NN : 50050
+DN3 escucha NN  : 50050
 DN3 escucha DN1 : 50053
 DN3 escucha DN2 : 50054
 
@@ -42,3 +42,22 @@ NN escucha DN1 : 50051
 NN escucha DN2 : 50052
 NN escucha DN3 : 50053
 NN escucha CD  : 50054
+
+
+Como hacer selecion de algoritmo ??
+Variable global / flag 
+
+Donde el rick ??
+en la parte de escritura del log, hay que hacer envío de messages entre DNs y aplicar el
+algoritmo en base al tiempo de cada maquina
+
+Implemetacion de Algo Distribuido
+1.- enviar porposal a los otros dn
+2.- reply de los otros dn a dn que envia porposal
+3.- envio de chunks como corresponde
+4.- que cada dn escriba
+5.- implemenra el algoritmo d ricard
+
+6.- informe papopeee
+
+

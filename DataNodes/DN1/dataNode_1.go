@@ -2,6 +2,7 @@
 package main
 
 import (
+	"container/list"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -20,6 +21,10 @@ import (
 const (
 	clientName = "DATANODE1"
 )
+
+var algoritmo bool //true = centralizado; false: distribuido
+
+var writing = list.New() // escrituras pendientes
 
 // server is used to implement lab2.GreeterServer.
 type server struct {
@@ -42,6 +47,95 @@ func storeInStorage(b books, title string, chunk string) {
 		storage[b.name].titles = append(storage[b.name].titles, title)
 		storage[b.name].chunks = append(storage[b.name].chunks, chunk)
 	}
+}
+
+func dataNodeProposal(ip string, mensaje string) bool {
+	var status bool
+	log.Println("[DATANODE P] Proposal", mensaje)
+	conn, err := grpc.Dial(ip, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("[DATANODE P] did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewGreeterClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	_, err = c.Greeting(ctx, &pb.Message{
+		M: mensaje})
+	if err != nil {
+		log.Printf("[DATANODE P] could not greet: %v\n", err)
+		status = false
+	}
+	return status
+}
+
+// RichardAgrawala resuleve colisiones posibles
+func (s *server) RichardAgrawala(ctx context.Context, in *pb.Conflict) (*pb.Conflict, error) {
+	if writing.Front() != nil {
+		return &pb.Conflict{
+			ClientName: "dist31",
+			Time:       "inf",
+		}, nil
+	}
+
+	now := time.Now()
+	t, _ := time.Parse(time.ANSIC, in.GetTime())
+	e := writing.Front() // First element
+	message := string(e.Value.(string))
+
+	// tiempo del servidor es menor para escribir
+	if now.Before(t) {
+		//wait para escribir
+		log.Println("[WRITE REQUEST] Proposal", message)
+		conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
+		if err != nil {
+			log.Fatalf("[WRITE REQUEST] did not connect: %v", err)
+		}
+		defer conn.Close()
+		c := pb.NewGreeterClient(conn)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		_, err = c.WriteRequest(ctx, &pb.Message{
+			M: message})
+		if err != nil {
+			log.Printf("[WRITE REQUEST] could not greet: %v\n", err)
+		}
+		writing.Remove(e)
+	}
+
+	return &pb.Conflict{
+		ClientName: "dist31",
+		Time:       "inf",
+	}, nil
+
+}
+
+// CallRichardAgrawalla para escribir en NameNode
+func CallRichardAgrawalla(ip string) string {
+	log.Println("[WRITE REQUEST RECEIVE CHUNK]")
+
+	now := time.Now()
+	t := now.Format("Mon Jan _2 15:04:05 2006")
+
+	conn, err := grpc.Dial(ip, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("[WRITE REQUEST RECEIVE CHUNK] did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewGreeterClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	r, err := c.RichardAgrawala(ctx, &pb.Conflict{
+		ClientName: clientName,
+		Time:       t,
+	})
+	if err != nil {
+		log.Printf("[WRITE REQUEST RECEIVE CHUNK] could not greet: %v\n", err)
+	}
+	if r.GetTime() == "inf" {
+		return "ok"
+	}
+	return ""
 }
 
 // Recibe un chunk y lo guarda en un archivo en el disco
@@ -72,44 +166,97 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 			partsPerNode,
 			tempBook.parts)
 
-		//send proposal
-		log.Println("[RECEIVE CHUNK] Proposal", message)
-		conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
-		if err != nil {
-			log.Fatalf("[RECEIVE CHUNK] did not connect: %v", err)
-		}
-		defer conn.Close()
-		c := pb.NewGreeterClient(conn)
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		r, err := c.Proposal(ctx, &pb.Message{
-			M: message})
-		if err != nil {
-			log.Fatalf("[RECEIVE CHUNK] could not greet: %v", err)
-		}
-
-		//deal with response in r
 		c1 := 0
 		c2 := 0
 		c3 := 0
 		var t []string
 		var i int
 		var j int
-		if r.GetM() == "A" {
-			//propuesta aceptada -> repartir con message
+		// CENTRALIZADO
+		if algoritmo == true {
+			//send proposal
+			log.Println("[RECEIVE CHUNK] Proposal", message)
+			conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
+			if err != nil {
+				log.Fatalf("[RECEIVE CHUNK] did not connect: %v", err)
+			}
+			defer conn.Close()
+			c := pb.NewGreeterClient(conn)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			r, err := c.Proposal(ctx, &pb.Message{
+				M: message})
+			if err != nil {
+				log.Fatalf("[RECEIVE CHUNK] could not greet: %v", err)
+			}
+
+			//deal with response in r
+			if r.GetM() == "A" {
+				//propuesta aceptada -> repartir con message
+				t = strings.Split(message, "**")
+				c1, _ = strconv.Atoi(t[1])
+				c2, _ = strconv.Atoi(t[2])
+				c3, _ = strconv.Atoi(t[3])
+
+			} else {
+				//propesta rechazada -> repartir con r
+				t = strings.Split(r.GetM(), "**")
+				c1, _ = strconv.Atoi(t[1])
+				c2, _ = strconv.Atoi(t[2])
+				c3, _ = strconv.Atoi(t[3])
+			}
+		} else { // DISTRIBUIDO
+			// Algo distribuido
 			t = strings.Split(message, "**")
 			c1, _ = strconv.Atoi(t[1])
 			c2, _ = strconv.Atoi(t[2])
 			c3, _ = strconv.Atoi(t[3])
+			//porposal a dn2
+			stat2 := dataNodeProposal("dist30:50053", message)
 
-		} else {
-			//propesta rechazada -> repartir con r
-			t = strings.Split(r.GetM(), "**")
-			c1, _ = strconv.Atoi(t[1])
-			c2, _ = strconv.Atoi(t[2])
-			c3, _ = strconv.Atoi(t[3])
+			//porposal a dn3
+			stat3 := dataNodeProposal("dist32:50053", message)
+
+			if stat2 == false {
+				c1 = c1 + c2
+			}
+			if stat3 == false {
+				c1 = c1 + c3
+			}
+
+			//enviar tiempo, msg a dn
+			writing.PushBack(fmt.Sprintf("%s**%d**%d**%d**%d", tempBook.name, c1, c2, c3, tempBook.parts))
+
+			calls := []string{"", ""}
+
+			for {
+				if calls[0] != "" && calls[1] != "" {
+					break
+				}
+				calls[0] = CallRichardAgrawalla("dist30:50053")
+				calls[1] = CallRichardAgrawalla("dist32:50053")
+			}
+
+			e := writing.Front()
+
+			log.Println("[RECEIVE CHUNK] Proposal", message)
+			conn, err := grpc.Dial("dist29:50051", grpc.WithInsecure(), grpc.WithBlock())
+			if err != nil {
+				log.Fatalf("[RECEIVE CHUNK] did not connect: %v", err)
+			}
+			defer conn.Close()
+			c := pb.NewGreeterClient(conn)
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			_, err = c.WriteRequest(ctx, &pb.Message{
+				M: string(e.Value.(string))})
+			if err != nil {
+				log.Fatalf("[RECEIVE CHUNK] could not greet: %v", err)
+			}
+			writing.Remove(e)
 		}
 
+		//ENVIO DE CHUNKS A LOS DN
 		//soy dn1 guardo c1 chunks
 		if c1 != 0 {
 			for i = 0; i < c1; i++ {
@@ -216,6 +363,16 @@ func ListenToClient(puerto string) {
 
 func main() {
 	storage = make(map[string]*books)
+
+	var a string
+	fmt.Println("Selecciona el tipo de algoritmo que deseas utilizar (numero): ")
+	fmt.Println("[1] Centralizado \n [2] Distribuido")
+	fmt.Print("Seleccion: ")
+	fmt.Scan(&a)
+
+	if a == "2" {
+		algoritmo = false
+	}
 
 	go ListenToClient(":50050") // NameNode
 	go ListenToClient(":50051") // clientes descargas
