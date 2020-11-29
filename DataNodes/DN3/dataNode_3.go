@@ -284,6 +284,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 			}
 		}
 	}
+	delete(storage, tempBook.name)
 	return &pb.StoreReply{Message: "Received & stored chunk"}, nil
 }
 
