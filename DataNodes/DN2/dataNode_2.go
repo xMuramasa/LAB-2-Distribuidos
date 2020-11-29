@@ -50,7 +50,7 @@ func storeInStorage(b books, title string, chunk string) {
 }
 
 func dataNodeProposal(ip string, mensaje string) bool {
-	var status bool
+	status := true
 	log.Println("[DATANODE P] Proposal", mensaje)
 	conn, err := grpc.Dial(ip, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
