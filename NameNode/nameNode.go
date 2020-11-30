@@ -55,7 +55,7 @@ func Exists(name string) bool {
 
 // RequestBook envia un bookinfo a un cliente
 func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookReply1, error) {
-
+	log.Println("------------------------------->[MESSAGE RECEIVED]")
 	b := fmt.Sprintf("%s**%s**%s**%s**%s",
 		library[in.GetBookNamePart()].name,
 		library[in.GetBookNamePart()].c1,
@@ -66,7 +66,7 @@ func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookR
 }
 
 func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message, error) {
-
+	log.Println("------------------------------->[MESSAGE RECEIVED]")
 	log.Println("Received Writing Request.")
 
 	var i int
@@ -103,6 +103,7 @@ func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message,
 			os.Exit(1)
 		}
 	}
+	start := time.Now()
 
 	buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
 
@@ -122,12 +123,15 @@ func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message,
 	}
 
 	ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
+	elapsed := time.Since(start)
+	log.Printf("Write in log.txt took %s", elapsed)
 	//defer f.Close()
 	log.Println("Accpeting proposal.")
 	return &pb.Message{M: "A"}, nil
 }
 
 func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, error) {
+	log.Println("------------------------------->[MESSAGE RECEIVED]")
 
 	log.Println("Received proposal.")
 
@@ -202,6 +206,7 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 			os.Exit(1)
 		}
 	}
+	start := time.Now()
 
 	buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
 
@@ -222,6 +227,8 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 
 	ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
 	//defer f.Close()
+	elapsed := time.Since(start)
+	log.Printf("Write in log.txt took %s", elapsed)
 	log.Println("Accpeting proposal.")
 	return &pb.Message{M: "A"}, nil
 }

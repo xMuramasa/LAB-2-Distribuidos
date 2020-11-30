@@ -71,6 +71,8 @@ func dataNodeProposal(ip string, mensaje string) bool {
 
 // RichardAgrawala resuleve colisiones posibles
 func (s *server) RichardAgrawala(ctx context.Context, in *pb.Conflict) (*pb.Conflict, error) {
+	log.Println("------------------------------->[MESAGE RECEIVED]")
+
 	if writing.Front() == nil {
 		return &pb.Conflict{
 			ClientName: "dist31",
@@ -140,8 +142,9 @@ func CallRichardAgrawalla(ip string) string {
 
 // Recibe un chunk y lo guarda en un archivo en el disco
 func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.StoreReply, error) {
-	log.Printf("Received: chunk 250kb. From: %v", in.GetClientName())
+	log.Println("------------------------------->[MESAGE RECEIVED]")
 
+	log.Printf("Received: chunk 250kb. From: %v", in.GetClientName())
 	//save chunk to memory
 	tempBook := books{
 		name:   in.GetFileName(),
@@ -292,6 +295,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 }
 
 func (s *server) StoreChunk(ctx context.Context, in *pb.StoreRequest) (*pb.StoreReply, error) {
+	log.Println("------------------------------->[MESAGE RECEIVED]")
 	log.Printf("Received: chunk 250kb. From: %v", in.GetClientName())
 
 	// write to disk
@@ -336,6 +340,7 @@ func SendToDataNode(initalIt int, endIt int, ip string, bookName string) int {
 
 // RequestChunk envia un chunk a un cliente
 func (s *server) RequestChunk(ctx context.Context, in *pb.BookRequest) (*pb.BookReply2, error) {
+	log.Println("------------------------------->[MESAGE RECEIVED]")
 
 	fileName := "./stored/" + in.GetBookNamePart()
 
