@@ -55,6 +55,7 @@ func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookR
 }
 
 func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message, error) {
+
 	log.Println("------------------------------->[MESSAGE RECEIVED]")
 	log.Println("Received Writing Request.")
 
@@ -63,55 +64,57 @@ func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message,
 	var k int
 
 	proposal := strings.Split(in.GetM(), "**") //nombre**c1**c2**c3**total
+	if library[proposal[0]] != nil {
 
-	//guardamos
-	tempBook := books{
-		name:  proposal[0],
-		c1:    proposal[1],
-		c2:    proposal[2],
-		c3:    proposal[3],
-		parts: proposal[4],
+		//guardamos
+		tempBook := books{
+			name:  proposal[0],
+			c1:    proposal[1],
+			c2:    proposal[2],
+			c3:    proposal[3],
+			parts: proposal[4],
+		}
+		//guardar info del libro
+		storeInLibrary(tempBook)
+
+		log.Println("Writing log file.")
+
+		//write
+		start := time.Now()
+
+		fileName := "log.txt"
+
+		f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		defer f.Close()
+
+		buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
+
+		nChunks, _ := strconv.Atoi(library[tempBook.name].c1)
+		for i = 0; i < nChunks; i++ {
+			buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", i) + " " + dataNode1 + "\n"
+		}
+
+		nChunks, _ = strconv.Atoi(library[tempBook.name].c2)
+		for j = 0; j < nChunks; j++ {
+			buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", j+i) + " " + dataNode2 + "\n"
+		}
+
+		nChunks, _ = strconv.Atoi(library[tempBook.name].c3)
+		for k = 0; k < nChunks; k++ {
+			buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j+i) + " " + dataNode3 + "\n"
+		}
+
+		if _, err = f.WriteString(buff); err != nil {
+			panic(err)
+		}
+		//ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
+		elapsed := time.Since(start)
+		log.Printf("Write in log.txt took %s", elapsed)
 	}
-	//guardar info del libro
-	storeInLibrary(tempBook)
-
-	log.Println("Writing log file.")
-
-	//write
-	start := time.Now()
-
-	fileName := "log.txt"
-
-	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer f.Close()
-
-	buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
-
-	nChunks, _ := strconv.Atoi(library[tempBook.name].c1)
-	for i = 0; i < nChunks; i++ {
-		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", i) + " " + dataNode1 + "\n"
-	}
-
-	nChunks, _ = strconv.Atoi(library[tempBook.name].c2)
-	for j = 0; j < nChunks; j++ {
-		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", j+i) + " " + dataNode2 + "\n"
-	}
-
-	nChunks, _ = strconv.Atoi(library[tempBook.name].c3)
-	for k = 0; k < nChunks; k++ {
-		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j+i) + " " + dataNode3 + "\n"
-	}
-
-	if _, err = f.WriteString(buff); err != nil {
-		panic(err)
-	}
-	//ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
-	elapsed := time.Since(start)
-	log.Printf("Write in log.txt took %s", elapsed)
 
 	log.Println("Accpeting proposal.")
 	return &pb.Message{M: "A"}, nil
@@ -135,83 +138,86 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 	//			proposal[2] = proposal[2] + proposal[1],
 	//			proposal[3] = proposal[3],
 
-	log.Println("Checking availability of datanodes.")
+	if library[proposal[0]] != nil {
 
-	// checkear que los 3 DN estan vivos
-	if connectToDataNode(dataNode1) == "0" {
-		flag = true
-		x, _ := strconv.Atoi(proposal[1])
-		y, _ := strconv.Atoi(proposal[2])
-		proposal[1] = "0"
-		proposal[2] = fmt.Sprintf("%d", x+y)
-	}
-	if connectToDataNode(dataNode2) == "0" {
-		flag = true
-		x, _ := strconv.Atoi(proposal[2])
-		y, _ := strconv.Atoi(proposal[3])
-		proposal[2] = "0"
-		proposal[3] = fmt.Sprintf("%d", x+y)
-	}
-	if connectToDataNode(dataNode3) == "0" {
-		flag = true
-		x, _ := strconv.Atoi(proposal[3])
-		y, _ := strconv.Atoi(proposal[1])
-		proposal[3] = "0"
-		proposal[1] = fmt.Sprintf("%d", x+y)
-	}
-	if flag {
-		b := fmt.Sprintf("%s**%s**%s**%s**%s",
-			proposal[0], proposal[1], proposal[2], proposal[3], proposal[4])
-		return &pb.Message{M: b}, nil
-	}
+		log.Println("Checking availability of datanodes.")
 
-	//guardamos
-	tempBook := books{
-		name:  proposal[0],
-		c1:    proposal[1],
-		c2:    proposal[2],
-		c3:    proposal[3],
-		parts: proposal[4],
+		// checkear que los 3 DN estan vivos
+		if connectToDataNode(dataNode1) == "0" {
+			flag = true
+			x, _ := strconv.Atoi(proposal[1])
+			y, _ := strconv.Atoi(proposal[2])
+			proposal[1] = "0"
+			proposal[2] = fmt.Sprintf("%d", x+y)
+		}
+		if connectToDataNode(dataNode2) == "0" {
+			flag = true
+			x, _ := strconv.Atoi(proposal[2])
+			y, _ := strconv.Atoi(proposal[3])
+			proposal[2] = "0"
+			proposal[3] = fmt.Sprintf("%d", x+y)
+		}
+		if connectToDataNode(dataNode3) == "0" {
+			flag = true
+			x, _ := strconv.Atoi(proposal[3])
+			y, _ := strconv.Atoi(proposal[1])
+			proposal[3] = "0"
+			proposal[1] = fmt.Sprintf("%d", x+y)
+		}
+		if flag {
+			b := fmt.Sprintf("%s**%s**%s**%s**%s",
+				proposal[0], proposal[1], proposal[2], proposal[3], proposal[4])
+			return &pb.Message{M: b}, nil
+		}
+
+		//guardamos
+		tempBook := books{
+			name:  proposal[0],
+			c1:    proposal[1],
+			c2:    proposal[2],
+			c3:    proposal[3],
+			parts: proposal[4],
+		}
+		//guardar info del libro
+		storeInLibrary(tempBook)
+
+		log.Println("Writing log file.")
+
+		//write
+		start := time.Now()
+
+		fileName := "log.txt"
+		f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		defer f.Close()
+
+		buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
+
+		nChunks, _ := strconv.Atoi(library[tempBook.name].c1)
+		for i = 0; i < nChunks; i++ {
+			buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", i) + " " + dataNode1 + "\n"
+		}
+
+		nChunks, _ = strconv.Atoi(library[tempBook.name].c2)
+		for j = 0; j < nChunks; j++ {
+			buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", j+i) + " " + dataNode2 + "\n"
+		}
+
+		nChunks, _ = strconv.Atoi(library[tempBook.name].c3)
+		for k = 0; k < nChunks; k++ {
+			buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j+i) + " " + dataNode3 + "\n"
+		}
+
+		//ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
+		if _, err = f.WriteString(buff); err != nil {
+			panic(err)
+		}
+		elapsed := time.Since(start)
+		log.Printf("Write in log.txt took %s", elapsed)
 	}
-	//guardar info del libro
-	storeInLibrary(tempBook)
-
-	log.Println("Writing log file.")
-
-	//write
-	start := time.Now()
-
-	fileName := "log.txt"
-	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer f.Close()
-
-	buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
-
-	nChunks, _ := strconv.Atoi(library[tempBook.name].c1)
-	for i = 0; i < nChunks; i++ {
-		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", i) + " " + dataNode1 + "\n"
-	}
-
-	nChunks, _ = strconv.Atoi(library[tempBook.name].c2)
-	for j = 0; j < nChunks; j++ {
-		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", j+i) + " " + dataNode2 + "\n"
-	}
-
-	nChunks, _ = strconv.Atoi(library[tempBook.name].c3)
-	for k = 0; k < nChunks; k++ {
-		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j+i) + " " + dataNode3 + "\n"
-	}
-
-	//ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
-	if _, err = f.WriteString(buff); err != nil {
-		panic(err)
-	}
-	elapsed := time.Since(start)
-	log.Printf("Write in log.txt took %s", elapsed)
 
 	log.Println("Accpeting proposal.")
 	return &pb.Message{M: "A"}, nil
