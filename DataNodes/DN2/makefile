@@ -2,4 +2,4 @@ make:
 	go run *.go
 
 clean:
-	rm -rf /stored/*
+	sudo rm -rf ./stored/*
