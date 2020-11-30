@@ -288,9 +288,9 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 		if c3 != 0 {
 			j = SendToDataNode(j, c3+j, "dist32:50053", tempBook.name)
 		}
+		delete(storage, tempBook.name)
 	}
 
-	delete(storage, tempBook.name)
 	return &pb.StoreReply{Message: "Received & stored chunk"}, nil
 }
 

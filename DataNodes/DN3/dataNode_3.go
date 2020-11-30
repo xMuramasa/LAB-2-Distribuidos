@@ -285,8 +285,8 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 				ioutil.WriteFile(fileName, []byte(storage[tempBook.name].chunks[i]), os.ModeAppend)
 			}
 		}
+		delete(storage, tempBook.name)
 	}
-	delete(storage, tempBook.name)
 	return &pb.StoreReply{Message: "Received & stored chunk"}, nil
 }
 
