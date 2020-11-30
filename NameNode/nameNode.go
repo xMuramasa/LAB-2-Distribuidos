@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -43,16 +42,6 @@ func storeInLibrary(book books) {
 	library[book.name] = &book
 }
 
-// Exists reports whether the named file or directory exists.
-func Exists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	return true
-}
-
 // RequestBook envia un bookinfo a un cliente
 func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookReply1, error) {
 	log.Println("------------------------------->[MESSAGE RECEIVED]")
@@ -89,24 +78,16 @@ func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message,
 	log.Println("Writing log file.")
 
 	//write
-	fileName := "log.txt"
-	if Exists(fileName) {
-		log.Println("logfile exists")
-		f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		defer f.Close()
-	} else {
-		log.Println("logfile doesnt exist")
-		_, err := os.Create(fileName)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	}
 	start := time.Now()
+
+	fileName := "log.txt"
+
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer f.Close()
 
 	buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
 
@@ -125,10 +106,13 @@ func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message,
 		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j+i) + " " + dataNode3 + "\n"
 	}
 
-	ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
+	if _, err = f.WriteString(buff); err != nil {
+		panic(err)
+	}
+	//ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
 	elapsed := time.Since(start)
 	log.Printf("Write in log.txt took %s", elapsed)
-	//defer f.Close()
+
 	log.Println("Accpeting proposal.")
 	return &pb.Message{M: "A"}, nil
 }
@@ -195,21 +179,15 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 	log.Println("Writing log file.")
 
 	//write
-	fileName := "log.txt"
-	if Exists(fileName) {
-		_, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	} else {
-		_, err := os.Create(fileName)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	}
 	start := time.Now()
+
+	fileName := "log.txt"
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer f.Close()
 
 	buff := library[tempBook.name].name + " " + library[tempBook.name].parts + "\n"
 
@@ -228,10 +206,13 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 		buff = buff + library[tempBook.name].name + "_parte_" + fmt.Sprintf("%d", k+j+i) + " " + dataNode3 + "\n"
 	}
 
-	ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
-	//defer f.Close()
+	//ioutil.WriteFile(fileName, []byte(buff), os.ModeAppend)
+	if _, err = f.WriteString(buff); err != nil {
+		panic(err)
+	}
 	elapsed := time.Since(start)
 	log.Printf("Write in log.txt took %s", elapsed)
+
 	log.Println("Accpeting proposal.")
 	return &pb.Message{M: "A"}, nil
 }
