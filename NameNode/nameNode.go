@@ -92,11 +92,12 @@ func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message,
 	fileName := "log.txt"
 	if Exists(fileName) {
 		log.Println("logfile exists")
-		_, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
+		f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		defer f.Close()
 	} else {
 		log.Println("logfile doesnt exist")
 		_, err := os.Create(fileName)
