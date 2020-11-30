@@ -25,6 +25,7 @@ type server struct {
 	pb.UnimplementedGreeterServer
 }
 
+//downloadBookInfo descarga informacion de un libro desde el namenode
 func downloadBookInfo(fileName string, c pb.GreeterClient) string {
 	// generacion de bookRequest para nameNode
 	storeRequest := &pb.BookRequest{
@@ -42,6 +43,7 @@ func downloadBookInfo(fileName string, c pb.GreeterClient) string {
 	return r.GetLocations()
 }
 
+//downloadChunks descarga chunks desde el datanode correspondiente en base a la coneccion c
 func downloadChunks(fileName string, c pb.GreeterClient) {
 	// generacion de bookRequest para dataNode
 	storeRequest := &pb.BookRequest{
@@ -164,6 +166,7 @@ func joinFile(fileName string, totalParts int32) {
 	file.Close()
 }
 
+//connectAndDownload se conecta a un datanode y descarga los chunks
 func connectAndDownload(fileName string, host string, nChunks int, start int) int {
 	//conexion con dataNode
 	var i int

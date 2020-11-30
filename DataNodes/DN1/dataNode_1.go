@@ -40,6 +40,7 @@ type books struct {
 
 var storage map[string]*books
 
+//storeInStorage almacena en el map storage
 func storeInStorage(b books, title string, chunk string) {
 	if storage[b.name] == nil {
 		storage[b.name] = &b
@@ -49,6 +50,7 @@ func storeInStorage(b books, title string, chunk string) {
 	}
 }
 
+//dataNodeProposal envia proposal para datanodes
 func dataNodeProposal(ip string, mensaje string) bool {
 	status := true
 	log.Println("[DATANODE P] Proposal", mensaje)
@@ -112,7 +114,7 @@ func (s *server) RichardAgrawala(ctx context.Context, in *pb.Conflict) (*pb.Conf
 
 }
 
-// CallRichardAgrawalla para escribir en NameNode
+// CallRichardAgrawalla para escribir en NameNode implementando el algoritmo de Richard-Agrawalla
 func CallRichardAgrawalla(ip string) string {
 	log.Println("[WRITE REQUEST RECEIVE CHUNK]")
 
@@ -140,7 +142,7 @@ func CallRichardAgrawalla(ip string) string {
 	return ""
 }
 
-// Recibe un chunk y lo guarda en un archivo en el disco
+//ReceiveChunk Recibe un chunk y cuando el libro esta completo, lo distribuye entre los datanodes
 func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.StoreReply, error) {
 	log.Println("------------------------------->[MESAGE RECEIVED]")
 
@@ -294,6 +296,7 @@ func (s *server) ReceiveChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Sto
 	return &pb.StoreReply{Message: "Received & stored chunk"}, nil
 }
 
+//StoreChunk Recibe un chunk y lo guarda en un archivo en el disco
 func (s *server) StoreChunk(ctx context.Context, in *pb.StoreRequest) (*pb.StoreReply, error) {
 	log.Println("------------------------------->[MESAGE RECEIVED]")
 	log.Printf("Received: chunk 250kb. From: %v", in.GetClientName())
@@ -312,7 +315,7 @@ func (s *server) StoreChunk(ctx context.Context, in *pb.StoreRequest) (*pb.Store
 	return &pb.StoreReply{Message: "Received chunk & stored in disk"}, nil
 }
 
-//SendToDataNode sends chunks to specified datanode at ip
+//SendToDataNode envia chunks a una ip especifica
 func SendToDataNode(initalIt int, endIt int, ip string, bookName string) int {
 	var j int
 	for j = initalIt; j < endIt; j++ {
@@ -354,6 +357,7 @@ func (s *server) RequestChunk(ctx context.Context, in *pb.BookRequest) (*pb.Book
 	return &pb.BookReply2{Chunk: toSend}, nil
 }
 
+//Greeting sirve para ver si un server esta activo
 func (s *server) Greeting(ctx context.Context, in *pb.Message) (*pb.Message, error) {
 	return &pb.Message{M: "1"}, nil
 }

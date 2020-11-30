@@ -15,6 +15,11 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	clientName = "clientUploader"
+)
+
+//uploadBook sube chunks de un libro a la coneccion c
 func uploadBook(fileName string, c pb.GreeterClient) {
 
 	fileToBeChunked := "./" + fileName
@@ -62,10 +67,6 @@ func uploadBook(fileName string, c pb.GreeterClient) {
 		log.Printf("%s", r)
 	}
 }
-
-const (
-	clientName = "clientUploader"
-)
 
 // Select selecciona aleatoreamente un dataNode a conectar
 func Select() string {

@@ -39,6 +39,7 @@ type books struct {
 
 var library map[string]*books
 
+// storeInLibrary almacena info de un libro en un map
 func storeInLibrary(book books) {
 	library[book.name] = &book
 }
@@ -55,6 +56,7 @@ func (s *server) RequestBook(ctx context.Context, in *pb.BookRequest) (*pb.BookR
 	return &pb.BookReply1{Locations: b}, nil
 }
 
+// WriteRequest procesa una solicitud de escritura en el log en el algoritmo distribuido
 func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message, error) {
 
 	log.Println("------------------------------->[MESSAGE RECEIVED]")
@@ -121,6 +123,9 @@ func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message,
 	return &pb.Message{M: "A"}, nil
 }
 
+//centralizado
+//Proposal recibe una proposicion de distribucion de chunks de un datanode y la acepta o rechaza.
+//Si la acepta, escribe en el log
 func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, error) {
 	log.Println("------------------------------->[MESSAGE RECEIVED]")
 
@@ -224,6 +229,7 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 	return &pb.Message{M: "A"}, nil
 }
 
+//connectToDatanode sirve para mandar un "ping" a un datanode
 func connectToDataNode(dataNode string) string {
 	conn, err := grpc.Dial(dataNode, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
