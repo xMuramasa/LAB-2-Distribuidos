@@ -84,11 +84,22 @@ func main() {
 
 	// Set up a connection to the server.
 	// Contact the server and print out its response.
-	conn, err := grpc.Dial(Select(), grpc.WithInsecure(), grpc.WithBlock())
+	node := Select()
+	conn, err := grpc.Dial(node, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Printf("did not connect to %s: %v\n", node, err)
+		for {
+			node = Select()
+			conn, err = grpc.Dial(node, grpc.WithInsecure(), grpc.WithBlock())
+			if err == nil {
+				break
+			} else {
+				log.Printf("did not connect to %s: %v\n", node, err)
+			}
+		}
 	}
 	defer conn.Close()
+
 	c := pb.NewGreeterClient(conn)
 
 	uploadBook(book, c)

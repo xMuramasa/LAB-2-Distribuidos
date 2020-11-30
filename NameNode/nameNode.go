@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"log"
@@ -260,8 +261,66 @@ func ListenToClient(port string) {
 	}
 }
 
+//logExists ve si el log está creado
+func logExists() bool {
+	info, err := os.Stat("log.txt")
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
+//readLog lee el log y lo almacena en el map
+func readLog() {
+	if logExists() == true {
+		f, err := os.Open("log.txt")
+		if err != nil {
+			log.Fatalf("Could not open log: %v", err)
+		}
+		defer f.Close()
+
+		scanner := bufio.NewScanner(f)
+
+		for scanner.Scan() {
+
+			tmp := strings.Split(scanner.Text(), " ")
+
+			nParts, _ := strconv.Atoi(tmp[1])
+			bookName := tmp[0]
+			var C1 int
+			var C2 int
+			var C3 int
+
+			for i := 0; i < nParts; i++ {
+				scanner.Scan()
+				x := strings.Split(scanner.Text(), " ") // x[0] part; x[1] loc
+				if x[1] == dataNode1 {
+					C1++
+				} else if x[1] == dataNode2 {
+					C2++
+				} else {
+					C3++
+				}
+			}
+			storeInLibrary(
+				books{
+					name:  bookName,
+					c1:    fmt.Sprintf("%d", C1),
+					c2:    fmt.Sprintf("%d", C2),
+					c3:    fmt.Sprintf("%d", C3),
+					parts: tmp[1]})
+		}
+
+		if err := scanner.Err(); err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
 func main() {
 	library = make(map[string]*books)
+	readLog()
+	fmt.Println(library)
 
 	var a string
 	fmt.Println("Selecciona el tipo de algoritmo que deseas utilizar (numero): ")

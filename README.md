@@ -10,21 +10,21 @@ ______________
 
 
 ## Maquinas 
-Máquina 1   receiver --------> Tiene grpc & rabbit
-hostname:   dist29
-contraseña: BcSz2fUS
+Máquina 1       (NameNode)   
+hostname    :   dist29
+contraseña  :   BcSz2fUS
 
-Máquina 2   camiones  --------> Tiene grpc
-hostname:   dist31
-contraseña: jzCsSjfR
+Máquina 2       (DataNode1) 
+hostname    :   dist31
+contraseña  :   jzCsSjfR
 
-Máquina 3   sender  --------> Tiene grpc
-hostname:   dist30
-contraseña: CtXTq9qq
+Máquina 3       (DataNode2 && Clients) 
+hostname    :   dist30
+contraseña  :   CtXTq9qq
 
-Máquina 4   finanzas  --------> Tiene rabbit
-hostname:   dist32
-contraseña: k5PfFYfP
+Máquina 4       (DataNode3) 
+hostname    :   dist32
+contraseña  :   k5PfFYfP
 
 El usuario de las máquinas es: root
 ______________
@@ -32,24 +32,52 @@ ______________
 
 ## Instrucciones de uso:
 
-#### Se debe entrar a la carpeta LAB-1-DS
-#### Se debe compilar el archivo helloworld.proto dentro de la carpeta A_Dependencies usando el comando:
-    protoc -I="." --go_out=$GOROOT/src/helloworld --go-grpc_out=$GOROOT/src/helloworld helloworld.proto
+#### Se debe entrar a la carpeta LAB-2-DISTRIBUIDOS
+#### Se debe compilar el archivo SendReceive.proto dentro de la carpeta AA_Dependencies usando el comando:
+    - make
+### Antes de todo, en el Namenode y datanodes, se debe seleccionar el algoritmo a utilizar, ingresar 1 o 2 según se quiera!
 
-#### Maquina 1:
+#### Maquina 1 NAMENODE:
+    - Asume que hay datanodes funcionando
+    - Para inicializar el namenode, se debe ingresar al directorio NameNode y ejecutar el comando make
+    - Para detener el servicio basta con ctrl+c
+    - Para limpiar el registro: make clean
 
 #### Maquina 2:
-
+    - Asume que el NameNode está funcionando
+    - Para inicializar el Datanode 1, se debe ingresar al directorio DataNodes/DN1 y ejecutar el comando make
+    - Para detener el servicio basta con ctrl+c
+    - Para limpiar los archivos almacenados dentro del directorio stored/, ejecutar make clean
 #### Maquina 3:
-
+  - DataNode 2:
+    - Asume que el NameNode está funcionando
+    - Para inicializar el Datanode 2, se debe ingresar al directorio DataNodes/DN2 y ejecutar el comando make
+    - Para detener el servicio basta con ctrl+c
+    - Para limpiar los archivos almacenados dentro del directorio stored/, ejecutar make clean
+  
+  - ClientDownloader:
+    - Asume que el NameNode está funcionando
+    - Ejecutar con make
+    - Se debe ingresar el nombre exacto del libro a descargar
+  
+  - ClientUploader:
+    - Asume que el NameNode está funcionando
+    - Ejecutar con make
+    - Se debe ingresar el nombre exacto del libro a subir
 #### Maquina 4:
+    - Asume que el NameNode está funcionando
+    - Para inicializar el Datanode 3, se debe ingresar al directorio DataNodes/DN3 y ejecutar el comando make
+    - Para detener el servicio basta con ctrl+c
+    - Para limpiar los archivos almacenados dentro del directorio stored/, ejecutar make clean
 ______________
 
 
 ## Consideraciones:
+    - Se asume que siempre hay al menos un datanode funcionando y el namenode está activo
+    - Si el clientUploader falla la conneccion inicial, lo intentará denuevo hasta establecer una conneccion con otro dn
     - Se asume que hay un directorio en GOPATH llamado lab2
     - Se asume que el usuario sabe lo que tiene que hacer y no comete errores en sus inputs
-    - Se asume que existe una carpeta llamada helloworld dentro de $GOROOT/src
+    - Se asume que existe una carpeta llamada lab2 dentro de $GOROOT/src
     - Se asume que las variables de entorno estan correctamente actualizadas ($GOROOT, $GOPATH, $GOBIN) en el archivo, .bashrc ubicado en ~/ con lo siguiente
             export GOROOT=/usr/local/go
             export GOPATH=$HOME/go
