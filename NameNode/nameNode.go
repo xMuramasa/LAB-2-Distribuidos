@@ -64,7 +64,7 @@ func (s *server) WriteRequest(ctx context.Context, in *pb.Message) (*pb.Message,
 	var k int
 
 	proposal := strings.Split(in.GetM(), "**") //nombre**c1**c2**c3**total
-	if library[proposal[0]] != nil {
+	if library[proposal[0]] == nil {
 
 		//guardamos
 		tempBook := books{
@@ -138,7 +138,7 @@ func (s *server) Proposal(ctx context.Context, in *pb.Message) (*pb.Message, err
 	//			proposal[2] = proposal[2] + proposal[1],
 	//			proposal[3] = proposal[3],
 
-	if library[proposal[0]] != nil {
+	if library[proposal[0]] == nil {
 
 		log.Println("Checking availability of datanodes.")
 
