@@ -58,12 +58,12 @@ ______________
   - ClientDownloader:
     - Asume que el NameNode está funcionando
     - Ejecutar con make
-    - Se debe ingresar el nombre exacto del libro a descargar
+    - Se debe ingresar el nombre exacto del libro a descargar con guiones y extención ej: CONAN_EL_VENGADOR-Robert_E._Howard.pdf
   
   - ClientUploader:
     - Asume que el NameNode está funcionando
     - Ejecutar con make
-    - Se debe ingresar el nombre exacto del libro a subir
+    - Se debe ingresar el nombre exacto del libro a subir con guiones y extención ej: CONAN_EL_VENGADOR-Robert_E._Howard.pdf
 #### Maquina 4:
     - Asume que el NameNode está funcionando
     - Para inicializar el Datanode 3, se debe ingresar al directorio DataNodes/DN3 y ejecutar el comando make
