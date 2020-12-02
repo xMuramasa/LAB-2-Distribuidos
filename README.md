@@ -1,5 +1,6 @@
 # LAB-2-Distribuidos
 2020-2
+https://github.com/xMuramasa/LAB-2-Distribuidos.git 
 ______________
 
 ## Integrantes:

@@ -19,7 +19,7 @@ const (
 	clientName = "clientUploader"
 )
 
-//uploadBook sube chunks de un libro a la coneccion c
+//uploadBook sube chunks (250kb) de un libro a la coneccion c
 func uploadBook(fileName string, c pb.GreeterClient) {
 
 	fileToBeChunked := "./" + fileName
