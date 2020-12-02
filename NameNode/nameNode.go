@@ -326,7 +326,6 @@ func readLog() {
 func main() {
 	library = make(map[string]*books)
 	readLog()
-	fmt.Println(library)
 
 	var a string
 	fmt.Println("Selecciona el tipo de algoritmo que deseas utilizar (numero): ")
